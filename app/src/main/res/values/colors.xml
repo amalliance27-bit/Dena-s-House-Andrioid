@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="built_black">#100D0D</color>
+    <color name="built_charcoal">#191414</color>
+    <color name="built_burgundy">#6B1930</color>
+    <color name="built_burgundy_deep">#3E101C</color>
+    <color name="built_gold">#D0A65A</color>
+    <color name="built_gold_light">#EBCD8E</color>
+    <color name="built_ivory">#F3ECDC</color>
+    <color name="built_ink">#211719</color>
+</resources>

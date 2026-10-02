@@ -1,0 +1,8 @@
+{
+  "name": "Precision Physique — Built by D",
+  "description": "Precision Physique — Built by D. Strength coaching for women in Hamilton, Ontario and online. Build muscle, confidence, mobility, and longevity.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
