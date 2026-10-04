@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.testTag
 import com.example.builtbyd.model.ScreenRoute
 import com.example.builtbyd.ui.components.AppTopBar
 import com.example.builtbyd.ui.components.ConsultationDialog
-import com.example.builtbyd.ui.components.WelcomeSplashScreen
 import com.example.builtbyd.ui.screens.DesignRoomScreen
 import com.example.builtbyd.ui.screens.HomeScreen
 import com.example.builtbyd.ui.screens.HouseFitnessScreen
@@ -76,8 +75,6 @@ fun MainApp(viewModel: BuiltByDViewModel) {
             topBar = {
                 AppTopBar(
                     currentRoute = currentRoute,
-                    isVoicePlaying = isVoicePlaying,
-                    onToggleVoice = { viewModel.soundEngine.toggleVoiceIntro() },
                     onNavigate = { viewModel.navigateTo(it) },
                     onOpenConsultation = { viewModel.openConsultation() }
                 )
@@ -140,7 +137,7 @@ fun MainApp(viewModel: BuiltByDViewModel) {
             }
         }
 
-        // Multi-Step Consultation Dialog
+        // Consultation Dialog
         ConsultationDialog(
             isOpen = isConsultationOpen,
             currentStep = intakeStep,
@@ -162,12 +159,6 @@ fun MainApp(viewModel: BuiltByDViewModel) {
             onNextStep = { viewModel.nextIntakeStep() },
             onPrevStep = { viewModel.prevIntakeStep() },
             onSendEmail = { viewModel.sendEmailSummary(context) }
-        )
-
-        // Welcome Splash Overlay on first launch
-        WelcomeSplashScreen(
-            visible = showSplash,
-            onDismiss = { viewModel.dismissSplash(playVoice = true) }
         )
     }
 }

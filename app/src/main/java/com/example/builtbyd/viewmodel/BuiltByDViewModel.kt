@@ -25,7 +25,7 @@ class BuiltByDViewModel(application: Application) : AndroidViewModel(application
 
     private val navStack = mutableListOf<ScreenRoute>()
 
-    private val _showSplash = MutableStateFlow(true)
+    private val _showSplash = MutableStateFlow(false)
     val showSplash: StateFlow<Boolean> = _showSplash.asStateFlow()
 
     private val _isConsultationOpen = MutableStateFlow(false)

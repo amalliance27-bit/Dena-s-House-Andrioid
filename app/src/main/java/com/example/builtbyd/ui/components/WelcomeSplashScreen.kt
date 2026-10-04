@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -41,6 +42,14 @@ fun WelcomeSplashScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    // Auto-advance after 4.5 seconds so no user can ever get stuck on splash
+    androidx.compose.runtime.LaunchedEffect(visible) {
+        if (visible) {
+            kotlinx.coroutines.delay(4500)
+            onDismiss()
+        }
+    }
 
     AnimatedVisibility(
         visible = visible,
@@ -78,6 +87,26 @@ fun WelcomeSplashScreen(
                     )
             )
 
+            // Top-right quick skip button
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                androidx.compose.material3.TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.testTag("skip_splash_button")
+                ) {
+                    Text(
+                        text = "Skip Intro →",
+                        color = BuiltGoldLight,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -98,7 +127,7 @@ fun WelcomeSplashScreen(
                     color = BuiltIvory,
                     fontFamily = FontFamily.Serif,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 52.sp,
+                    fontSize = 48.sp,
                     letterSpacing = (-1).sp
                 )
                 Text(
@@ -116,12 +145,36 @@ fun WelcomeSplashScreen(
                         .background(BuiltGold)
                 )
                 Spacer(modifier = Modifier.height(28.dp))
+
+                // Prominent Enter Button
+                androidx.compose.material3.Button(
+                    onClick = onDismiss,
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = BuiltGold,
+                        contentColor = BuiltBlack
+                    ),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("enter_app_button")
+                ) {
+                    Text(
+                        text = "ENTER SITE / APP →",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        letterSpacing = 1.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Text(
-                    text = "Tap anywhere to enter & hear Deana's voice",
+                    text = "Tap anywhere or wait a moment to enter automatically",
                     color = BuiltIvorySoft,
-                    fontSize = 12.sp,
-                    letterSpacing = 1.sp,
-                    fontWeight = FontWeight.Medium
+                    fontSize = 11.sp,
+                    letterSpacing = 0.5.sp,
+                    fontWeight = FontWeight.Normal
                 )
             }
         }

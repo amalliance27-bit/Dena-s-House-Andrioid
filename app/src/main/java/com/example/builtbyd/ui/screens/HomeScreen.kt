@@ -1,9 +1,16 @@
 package com.example.builtbyd.ui.screens
 
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.animateDecay
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +28,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,11 +40,20 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -61,6 +79,31 @@ import com.example.builtbyd.ui.theme.BuiltGoldLight
 import com.example.builtbyd.ui.theme.BuiltIvory
 import com.example.builtbyd.ui.theme.BuiltIvorySoft
 import com.example.builtbyd.ui.theme.BuiltLine
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlin.math.abs
+
+private class AppleSmoothFlingBehavior(
+    private val decaySpec: DecayAnimationSpec<Float>
+) : FlingBehavior {
+    override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+        var lastValue = 0f
+        var remainingVelocity = initialVelocity
+        AnimationState(
+            initialValue = 0f,
+            initialVelocity = initialVelocity
+        ).animateDecay(decaySpec) {
+            val delta = value - lastValue
+            val consumed = scrollBy(delta)
+            lastValue = value
+            remainingVelocity = velocity
+            if (abs(delta - consumed) > 0.5f) {
+                cancelAnimation()
+            }
+        }
+        return remainingVelocity
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -71,11 +114,76 @@ fun HomeScreen(
     onNavigate: (ScreenRoute) -> Unit,
     isTestimonialsPaused: Boolean,
     onToggleTestimonials: () -> Unit,
+    onOpenElevenLabs: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val lazyListState = rememberLazyListState()
+    var scrollDirection by remember { mutableIntStateOf(1) } // 1 for down, -1 for up
+    var lastInteractionTime by remember { mutableLongStateOf(0L) }
+    var holdUntilMs by remember { mutableLongStateOf(0L) }
+
+    // Apple-smooth low-friction fluid fling physics
+    val appleFlingBehavior = remember {
+        AppleSmoothFlingBehavior(
+            decaySpec = exponentialDecay(
+                frictionMultiplier = 0.70f,
+                absVelocityThreshold = 0.1f
+            )
+        )
+    }
+
+    // Touch event listener to yield immediately on touch and reset the 10-second timer when released
+    LaunchedEffect(lazyListState.isScrollInProgress) {
+        lastInteractionTime = System.currentTimeMillis()
+    }
+
+    // Hypnotic smooth auto-scroll engine (Apple-smooth VSync lockstep, 10s resume after release)
+    LaunchedEffect(Unit) {
+        delay(1500)
+        var lastFrameNanos = 0L
+        while (isActive) {
+            withFrameNanos { frameTimeNanos ->
+                val now = System.currentTimeMillis()
+                val timeSinceInteraction = now - lastInteractionTime
+                val remainingCooldownMs = 10_000L - timeSinceInteraction
+
+                if (lazyListState.isScrollInProgress) {
+                    lastInteractionTime = now
+                    lastFrameNanos = 0L
+                } else if (remainingCooldownMs <= 0) {
+                    if (now >= holdUntilMs) {
+                        if (lastFrameNanos > 0L) {
+                            val dtSeconds = (frameTimeNanos - lastFrameNanos) / 1_000_000_000.0
+                            val step = (dtSeconds * 46.0).toFloat().coerceIn(0f, 3.5f)
+
+                            val canScrollDown = lazyListState.canScrollForward
+                            val canScrollUp = lazyListState.canScrollBackward
+
+                            if (scrollDirection > 0 && !canScrollDown) {
+                                holdUntilMs = now + 2500L
+                                scrollDirection = -1
+                            } else if (scrollDirection < 0 && !canScrollUp) {
+                                holdUntilMs = now + 2500L
+                                scrollDirection = 1
+                            } else {
+                                lazyListState.dispatchRawDelta(scrollDirection * step)
+                            }
+                        }
+                        lastFrameNanos = frameTimeNanos
+                    } else {
+                        lastFrameNanos = 0L
+                    }
+                } else {
+                    lastFrameNanos = 0L
+                }
+            }
+        }
+    }
 
     LazyColumn(
+        state = lazyListState,
+        flingBehavior = appleFlingBehavior,
         modifier = modifier
             .fillMaxSize()
             .background(BuiltBlack)
@@ -86,29 +194,31 @@ fun HomeScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(520.dp)
+                    .height(600.dp)
             ) {
-                // Background image from assets
+                // Background image from assets - framed high with TopCenter so face & physique are clearly visible
                 AsyncImage(
                     model = ImageRequest.Builder(context)
                         .data("file:///android_asset/assets/media-02-f34a6a16d1.jpg")
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Deana Brady training in gym",
+                    contentDescription = "Deana Brady - Precision Physique",
                     contentScale = ContentScale.Crop,
+                    alignment = Alignment.TopCenter,
                     modifier = Modifier.fillMaxSize()
                 )
 
-                // Dramatic Dark Gradient Overlay
+                // Refined editorial gradient: transparent at top so her portrait is clear, smoothly shading to black at base
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(
-                                    BuiltBlack.copy(alpha = 0.5f),
-                                    BuiltBlack.copy(alpha = 0.75f),
-                                    BuiltBlack
+                                colorStops = arrayOf(
+                                    0.0f to Color.Transparent,
+                                    0.35f to BuiltBlack.copy(alpha = 0.25f),
+                                    0.65f to BuiltBlack.copy(alpha = 0.78f),
+                                    1.0f to BuiltBlack
                                 )
                             )
                         )
@@ -182,41 +292,64 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Audio Intro Pill
+                    // Audio Intro Note Card (Mature, Elegant, Non-pulsating)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0x99100D0D), RoundedCornerShape(8.dp))
-                            .border(1.dp, BuiltLine, RoundedCornerShape(8.dp))
-                            .padding(12.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(if (isVoicePlaying) BuiltBurgundyDeep.copy(alpha = 0.65f) else BuiltBlack.copy(alpha = 0.85f))
+                            .border(1.dp, if (isVoicePlaying) BuiltGold else BuiltLine, RoundedCornerShape(4.dp))
+                            .clickable { onToggleVoice() }
+                            .padding(horizontal = 14.dp, vertical = 12.dp)
+                            .testTag("voice_intro_card")
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "D's Voice Introduction",
-                                    color = BuiltGoldLight,
+                                    text = if (isVoicePlaying) "DEANA'S VOICE · PLAYING" else "DEANA BRADY · AUDIO NOTE",
+                                    color = if (isVoicePlaying) BuiltGold else BuiltGoldLight,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.8.sp
+                                    letterSpacing = 1.sp
                                 )
                                 Text(
-                                    text = if (isVoicePlaying) "Listening to Deana..." else "Tap to hear Deana's welcome message",
-                                    color = BuiltIvorySoft,
+                                    text = if (isVoicePlaying) "▶ Audio active — listening to Deana Brady" else "Tap card to hear Deana's welcome note (0:57)",
+                                    color = if (isVoicePlaying) BuiltGoldLight else BuiltIvorySoft,
                                     fontSize = 12.sp
                                 )
                             }
-                            VoicePlayerPill(
-                                isPlaying = isVoicePlaying,
-                                onToggle = onToggleVoice
-                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                VoicePlayerPill(
+                                    isPlaying = isVoicePlaying,
+                                    onToggle = onToggleVoice
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .background(BuiltBlack.copy(alpha = 0.7f), RoundedCornerShape(4.dp))
+                                        .border(1.dp, BuiltGoldLight.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                                        .clickable { onOpenElevenLabs() }
+                                        .padding(horizontal = 8.dp, vertical = 7.dp)
+                                        .testTag("open_elevenlabs_button")
+                                ) {
+                                    Text(
+                                        text = "AI VOICE",
+                                        color = BuiltGoldLight,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.8.sp
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

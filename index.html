@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Physique — Built by D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0A0B;
+            --bg-card: #141416;
+            --bg-surface: #1E1E22;
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #AA771C 100%);
+            --ivory: #F8F6F0;
+            --ivory-muted: #A3A3B0;
+            --burgundy: #581825;
+            --border-subtle: rgba(212, 175, 55, 0.2);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--ivory);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Top Notification Bar */
+        .system-banner {
+            background: linear-gradient(90deg, #180f14, #2a1622, #180f14);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 10px 20px;
+            font-size: 13px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .system-badge {
+            background: var(--gold);
+            color: #000;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-apk-pill {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--gold-light);
+            border: 1px solid var(--gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-apk-pill:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 11, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-card);
+            padding: 18px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--gold);
+            background: #191414;
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: var(--ivory);
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--gold-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-light);
+        }
+
+        .btn-gold {
+            background: var(--gold-gradient);
+            color: #000;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            padding: 10px 22px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-gold:hover {
+            opacity: 0.9;
+        }
+
+        /* Voice Player Bar */
+        .voice-bar {
+            background: #141113;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .voice-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .voice-btn:hover {
+            background: rgba(212, 175, 55, 0.25);
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            min-height: 75vh;
+            display: flex;
+            align-items: center;
+            padding: 60px 40px;
+            background: linear-gradient(to right, rgba(10, 10, 11, 0.95) 45%, rgba(10, 10, 11, 0.5) 100%),
+                        url('/WhatsApp%20Image%202026-09-18%20at%206.59.12%20AM.jpeg') center/cover no-repeat;
+        }
+
+        .hero-content {
+            max-width: 680px;
+            z-index: 2;
+        }
+
+        .hero-tagline {
+            color: var(--gold-light);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-tagline::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(38px, 6vw, 64px);
+            line-height: 1.1;
+            font-weight: 800;
+            color: var(--ivory);
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--gold-light);
+            font-style: italic;
+            margin-bottom: 20px;
+            font-family: var(--font-display);
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            color: var(--ivory-muted);
+            margin-bottom: 34px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--ivory);
+            background: transparent;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        /* Container & Sections */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-tag {
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--ivory);
+        }
+
+        .section-sub {
+            color: var(--ivory-muted);
+            font-size: 15px;
+            max-width: 600px;
+            margin: 12px auto 0;
+        }
+
+        /* Principles Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 32px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-subtle);
+        }
+
+        .card-num {
+            font-family: var(--font-display);
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--ivory);
+        }
+
+        .card-body {
+            color: var(--ivory-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Meet Coach Section */
+        .coach-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 50px;
+            align-items: center;
+            background: #111012;
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 40px;
+        }
+
+        .coach-img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .coach-info h3 {
+            font-family: var(--font-display);
+            font-size: 32px;
+            color: var(--ivory);
+            margin-bottom: 6px;
+        }
+
+        .coach-info .role {
+            color: var(--gold-light);
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .coach-info p {
+            color: var(--ivory-muted);
+            font-size: 15px;
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .credentials {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .cred-item {
+            background: var(--bg-surface);
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+            color: var(--ivory);
+        }
+
+        /* Consultation Intake Section */
+        .intake-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ivory);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-card);
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .goal-chip {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-card);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .goal-chip input {
+            accent-color: var(--gold);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-card);
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--ivory-muted);
+            font-size: 13px;
+            background: #080809;
+        }
+
+        footer strong {
+            color: var(--gold);
+        }
+
+        @media (max-width: 850px) {
+            .coach-wrap {
+                grid-template-columns: 1fr;
+                padding: 24px;
+            }
+            .hero {
+                padding: 40px 20px;
+            }
+            nav {
+                padding: 16px 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Notification Bar for AI Studio & APK -->
+    <div class="system-banner">
+        <span class="system-badge">System Live</span>
+        <span>Built by D is running smoothly. View in browser, use the Android Emulator on the right, or get the APK!</span>
+        <a href="/download-apk" class="btn-apk-pill">📥 Download Android APK</a>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav>
+        <div class="logo-wrap">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">
+                <h1>BUILT BY D</h1>
+                <span>Precision Physique</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#principles">Method</a>
+            <a href="#programs">Coaching</a>
+            <a href="#journal">Journal</a>
+            <a href="#consultation" class="btn-gold">Book Consultation</a>
+        </div>
+    </nav>
+
+    <!-- Voice Intro Bar -->
+    <div class="voice-bar">
+        <audio id="deanaVoiceAudio" src="/dean_intro_voice.mp3" preload="auto"></audio>
+        <button class="voice-btn" onclick="toggleVoiceAudio()">
+            <span id="audioIcon">▶</span>
+            <span id="audioStatusText">Play Deana's Voice Introduction</span>
+        </button>
+        <span style="font-size: 12px; color: var(--ivory-muted);">Hamilton, ON · Women's Strength & Longevity</span>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tagline">Precision Physique · Hamilton, ON</div>
+            <h1 class="hero-title">Stronger at Every Age.</h1>
+            <p class="hero-subtitle">Real training. Real women. Real results.</p>
+            <p class="hero-desc">
+                High-standard strength and body composition coaching designed for women who refuse to settle.
+                Build lean muscle, unbreakable joints, metabolism, and athletic confidence with coach Deana Brady.
+            </p>
+            <div class="hero-actions">
+                <a href="#consultation" class="btn-gold">Start Your Intake</a>
+                <a href="#programs" class="btn-outline">Explore Programs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5 Principles of the Built by D Method -->
+    <section class="container" id="principles">
+        <div class="section-header">
+            <div class="section-tag">Philosophy & Standard</div>
+            <h2 class="section-title">The 5 Core Principles</h2>
+            <p class="section-sub">No gimmicks, starvation diets, or endless cardio. We build lasting physiques through biomechanical precision.</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-num">01</div>
+                <h3 class="card-title">Progressive Overload</h3>
+                <p class="card-body">Muscle responds to demand. Every repetition and session is tracked, optimized, and driven with deliberate intention and form.</p>
+            </div>
+            <div class="card">
+                <div class="card-num">02</div>
+                <h3 class="card-title">Real Food & Protein First</h3>
+                <p class="card-body">We feed muscle to build metabolism. Prioritizing lean protein, nutrient density, and sustainable fueling strategies that empower longevity.</p>
+            </div>
+            <div class="card">
+                <div class="card-num">03</div>
+                <h3 class="card-title">Form Before Load</h3>
+                <p class="card-body">Ego stays at the door. Mastery of joint kinematics and range of motion precedes heavier plates, keeping you strong and injury-free for life.</p>
+            </div>
+            <div class="card">
+                <div class="card-num">04</div>
+                <h3 class="card-title">Consistency Over Intensity</h3>
+                <p class="card-body">Extreme workouts you dread won't change your body. Sustainable, methodical discipline practiced week after week yields transformative results.</p>
+            </div>
+            <div class="card">
+                <div class="card-num">05</div>
+                <h3 class="card-title">Longevity & Bone Density</h3>
+                <p class="card-body">Lifting heavy preserves bone mineral density, hormonal balance, and independence as we age. Strength is your lifelong health insurance.</p>
+            </div>
+            <div class="card">
+                <div class="card-num">★</div>
+                <h3 class="card-title">Community & Mindset</h3>
+                <p class="card-body">Surround yourself with women who push each other up. Elevate your self-image through physical resilience and disciplined victory.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet Coach Deana Brady -->
+    <section class="container" id="about">
+        <div class="coach-wrap">
+            <img src="/deana.jpg" alt="Coach Deana Brady" class="coach-img" onerror="this.src='/Body%20by%20Dee.jpg'">
+            <div class="coach-info">
+                <div class="section-tag">Meet Your Coach</div>
+                <h3>Deana Brady</h3>
+                <div class="role">Founder & Head Strength Coach · Precision Physique</div>
+                <p>
+                    I founded Built by D on a straightforward conviction: women deserve real, progressive strength training that honors their time, their health, and their ambitions.
+                </p>
+                <p>
+                    Whether working 1-on-1 in Hamilton, Ontario or coaching online across North America, my mission is showing you what your body is truly capable of when you stop starving it and start training with purpose.
+                </p>
+                <div class="credentials">
+                    <div class="cred-item">✓ Certified Strength Specialist</div>
+                    <div class="cred-item">✓ Biomechanics & Physique Prep</div>
+                    <div class="cred-item">✓ Hamilton In-Person & Remote</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Consultation Booking Intake Form -->
+    <section class="container" id="consultation">
+        <div class="section-header">
+            <div class="section-tag">Application</div>
+            <h2 class="section-title">Coaching Intake Questionnaire</h2>
+            <p class="section-sub">Fill out your goals and details below to initiate your 1:1 consultation directly with Coach Deana Brady.</p>
+        </div>
+
+        <div class="intake-box">
+            <form id="consultationForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Primary Goals (Select all that apply):</label>
+                    <div class="goals-grid">
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Build Muscle"> Build Lean Muscle</label>
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Fat Loss"> Fat Loss / Recomposition</label>
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Strength & Power"> Pure Strength & Power</label>
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Mobility & Longevity"> Mobility & Longevity</label>
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Nutrition Coaching"> Nutrition Coaching</label>
+                        <label class="goal-chip"><input type="checkbox" name="goals" value="Post-Injury Return"> Post-Injury Training</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="serviceSelect">Service Format:</label>
+                    <select id="serviceSelect" class="form-control">
+                        <option value="1:1 In-Person Personal Training (Hamilton, ON)">1:1 In-Person Personal Training (Hamilton, ON)</option>
+                        <option value="Online 1:1 Physique Coaching">Online 1:1 Physique Coaching</option>
+                        <option value="Built by D Strength Program (App Access)">Built by D Strength Program (App Access)</option>
+                        <option value="Women's Longevity & Mobility Intensive">Women's Longevity & Mobility Intensive</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="clientName">Your Full Name:</label>
+                        <input type="text" id="clientName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="clientEmail">Your Email:</label>
+                        <input type="email" id="clientEmail" class="form-control" placeholder="you@domain.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientExperience">Training Background & Experience:</label>
+                    <select id="clientExperience" class="form-control">
+                        <option value="Beginner (0-1 years lifting)">Beginner (0-1 years lifting)</option>
+                        <option value="Intermediate (2-4 years consistent)">Intermediate (2-4 years consistent)</option>
+                        <option value="Advanced (5+ years dedicated)">Advanced (5+ years dedicated)</option>
+                        <option value="Returning after a break">Returning after a break</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientNotes">Tell Coach Deana about what you want to achieve in the next 90 days:</label>
+                    <textarea id="clientNotes" class="form-control" rows="4" placeholder="Share your current challenges, injuries, schedule constraints, and what success looks like to you..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-gold" style="width: 100%; padding: 16px; font-size: 15px;">Send Consultation Request to Coach Deana →</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Precision Physique — Built by D</strong> · Hamilton, Ontario & Online Coaching Worldwide</p>
+        <p style="margin-top: 8px;">Direct contact: deanambrady@hotmail.com · Native Android Build & Web Companion</p>
+        <p style="margin-top: 12px; font-size: 11px; opacity: 0.6;">© 2026 Built by D. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Voice Audio Controller
+        const audio = document.getElementById('deanaVoiceAudio');
+        const audioBtn = document.getElementById('audioStatusText');
+        const audioIcon = document.getElementById('audioIcon');
+
+        function toggleVoiceAudio() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    audioBtn.textContent = "Pause Deana's Voice Introduction";
+                    audioIcon.textContent = "⏸";
+                }).catch(err => {
+                    console.log("Audio play error:", err);
+                });
+            } else {
+                audio.pause();
+                audioBtn.textContent = "Play Deana's Voice Introduction";
+                audioIcon.textContent = "▶";
+            }
+        }
+
+        audio.onended = () => {
+            audioBtn.textContent = "Play Deana's Voice Introduction";
+            audioIcon.textContent = "▶";
+        };
+
+        // Form Submission to deanambrady@hotmail.com
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const goals = Array.from(document.querySelectorAll('input[name="goals"]:checked')).map(c => c.value).join(', ');
+            const service = document.getElementById('serviceSelect').value;
+            const name = document.getElementById('clientName').value;
+            const email = document.getElementById('clientEmail').value;
+            const exp = document.getElementById('clientExperience').value;
+            const notes = document.getElementById('clientNotes').value;
+
+            const subject = encodeURIComponent(`Built by D Consultation Request: ${name}`);
+            const body = encodeURIComponent(
+                `Hi Deana,\n\nI would like to apply for a Built by D consultation.\n\n` +
+                `Name: ${name}\n` +
+                `Email: ${email}\n` +
+                `Service Interest: ${service}\n` +
+                `Selected Goals: ${goals || 'General Strength'}\n` +
+                `Experience: ${exp}\n\n` +
+                `Notes / 90-Day Vision:\n${notes}\n\n` +
+                `Sent via Built by D Portal.`
+            );
+
+            window.location.href = `mailto:deanambrady@hotmail.com?subject=${subject}&body=${body}`;
+            alert("Thank you, " + name + "! Your consultation brief is ready. Your email client will now open to send this directly to Deana.");
+        }
+    </script>
+</body>
+</html>

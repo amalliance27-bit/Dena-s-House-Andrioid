@@ -50,10 +50,11 @@ import com.example.builtbyd.ui.theme.BuiltLine
 @Composable
 fun AppTopBar(
     currentRoute: ScreenRoute,
-    isVoicePlaying: Boolean,
-    onToggleVoice: () -> Unit,
     onNavigate: (ScreenRoute) -> Unit,
     onOpenConsultation: () -> Unit,
+    onOpenElevenLabs: () -> Unit = {},
+    onOpenSplash: () -> Unit = {},
+    onTestSound: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -112,31 +113,22 @@ fun AppTopBar(
                 }
             }
 
-            // Actions: Voice Pill + Consultation + Menu
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                VoicePlayerPill(
-                    isPlaying = isVoicePlaying,
-                    onToggle = onToggleVoice
-                )
+            // Header Navigation Menu
+            Box {
+                IconButton(
+                    onClick = { menuExpanded = !menuExpanded },
+                    modifier = Modifier
+                        .size(38.dp)
+                        .testTag("menu_toggle_button")
+                ) {
+                    Icon(
+                        imageVector = if (menuExpanded) Icons.Default.Close else Icons.Default.Menu,
+                        contentDescription = "Navigation Menu",
+                        tint = BuiltIvory
+                    )
+                }
 
-                Box {
-                    IconButton(
-                        onClick = { menuExpanded = !menuExpanded },
-                        modifier = Modifier
-                            .size(38.dp)
-                            .testTag("menu_toggle_button")
-                    ) {
-                        Icon(
-                            imageVector = if (menuExpanded) Icons.Default.Close else Icons.Default.Menu,
-                            contentDescription = "Navigation Menu",
-                            tint = BuiltIvory
-                        )
-                    }
-
-                    DropdownMenu(
+                DropdownMenu(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false },
                         modifier = Modifier
@@ -185,10 +177,69 @@ fun AppTopBar(
                                 onOpenConsultation()
                             }
                         )
+
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Text("✦", color = BuiltGoldLight, fontSize = 11.sp)
+                                    Text(
+                                        text = "ElevenLabs Studio",
+                                        color = BuiltGoldLight,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenElevenLabs()
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Text("✦", color = BuiltGold, fontSize = 11.sp)
+                                    Text(
+                                        text = "Reopen Welcome Splash",
+                                        color = BuiltGold,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onOpenSplash()
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Text("🔊", fontSize = 13.sp)
+                                    Text(
+                                        text = "Test Audio & Bell Chime",
+                                        color = BuiltIvory,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onTestSound()
+                            }
+                        )
                     }
                 }
             }
-        }
 
         HorizontalDivider(color = BuiltLine.copy(alpha = 0.5f))
     }
